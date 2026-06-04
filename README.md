@@ -208,4 +208,4 @@ If you restart your database server or purge Mongo collections, existing cached 
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the GNU General Public License v3 (GPL v3). See [LICENSE](LICENSE) for more information.
