@@ -39,6 +39,7 @@ const getBudgetSnapshot = async (userId, expenses, goals) => {
   let income = DEFAULT_MONTHLY_INCOME;
   let savingsGoal = Math.round(DEFAULT_MONTHLY_INCOME * 0.2);
   let monthlyLimit = Math.round(DEFAULT_MONTHLY_INCOME * 0.7);
+  let hasBudget = false;
 
   if (isDbConnected(userId)) {
     try {
@@ -47,6 +48,7 @@ const getBudgetSnapshot = async (userId, expenses, goals) => {
         income = budget.income || income;
         savingsGoal = budget.savingsGoal || savingsGoal;
         monthlyLimit = budget.monthlyLimit || monthlyLimit;
+        hasBudget = true;
       }
     } catch (err) {
       console.warn("Failed to load budget snapshot, using defaults:", err.message);
@@ -57,6 +59,7 @@ const getBudgetSnapshot = async (userId, expenses, goals) => {
       income = budget.income || income;
       savingsGoal = budget.savingsGoal || savingsGoal;
       monthlyLimit = budget.monthlyLimit || monthlyLimit;
+      hasBudget = true;
     }
   }
 
@@ -70,7 +73,8 @@ const getBudgetSnapshot = async (userId, expenses, goals) => {
     savings: totalGoalSavings || monthlySavings,
     monthlySavings,
     savingsGoal,
-    monthlyLimit
+    monthlyLimit,
+    hasBudget
   };
 };
 
@@ -656,7 +660,8 @@ export const fetchDashboardData = async (userId) => {
         score: expenses.length > 0 || goals.length > 0 ? financialHealth.score : 0,
         grade: expenses.length > 0 || goals.length > 0 ? financialHealth.grade : "—",
         rating: expenses.length > 0 || goals.length > 0 ? financialHealth.rating : "No data",
-        metrics: financialHealth.metrics
+        metrics: financialHealth.metrics,
+        hasBudget: budgetSnapshot.hasBudget
       },
       goalsActive: { count: goals.length, status: goals.length > 0 ? "On Track" : "None yet" },
       riskProfile: { level: goals.length > 0 ? "Low-Moderate" : "—", rating: goals.length > 0 ? "Healthy" : "—" },

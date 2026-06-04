@@ -219,10 +219,12 @@ const Dashboard = () => {
         />
         <StatCard
           title="Monthly Income"
-          value={data.secondary?.financialHealth?.metrics
-            ? `₹${(data.secondary.financialHealth.metrics as any).income?.toLocaleString("en-IN") || "0"}`
-            : "Set in Planner"}
-          status="Budget target"
+          value={
+            data.secondary?.financialHealth?.hasBudget && data.secondary?.financialHealth?.metrics
+              ? `₹${(data.secondary.financialHealth.metrics as any).income?.toLocaleString("en-IN") || "0"}`
+              : "Set in Planner"
+          }
+          status={data.secondary?.financialHealth?.hasBudget ? "Budget target" : "Go to Budget Planner →"}
         />
         <StatCard
           title="Health Score"
