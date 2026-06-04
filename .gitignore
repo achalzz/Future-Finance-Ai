@@ -25,9 +25,18 @@ dist-ssr/
 .gemini/
 .codex/
 .cache/
-.n8n/
 brain/
 .tempmediaStorage/
 .system_generated/
 *.log
 .vite/
+
+# n8n configurations and local databases
+.n8n/
+**/.n8n/
+*.sqlite
+*.sqlite-journal
+*.sqlite3
+database.sqlite
+*workflow*.json
+n8n_backup/

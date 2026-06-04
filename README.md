@@ -7,7 +7,7 @@ Future Finance AI is a premium, dark-mode first personal wealth ecosystem and AI
 ## 🚀 Key Features
 
 *   **3D Hologram Assistant:** Slow-orbiting particle canvas and rotating glass torus built using Three.js and React Three Fiber.
-*   **AI Financial Advisor Chatbot:** Metallic-glass chat interface containing a breathing 3D wireframe hologram assistant that supports contextual history memory.
+*   **n8n-Orchestrated AI Financial Advisor:** A metallic-glass chat interface backed by an advanced n8n workflow agent. Features a breathing 3D wireframe hologram core, structured financial context injection, session memory, and suggested next-action triggers.
 *   **Financial Health Gauge:** Custom count-up radial gauge that rates your savings, debt ratio, and spending trends from 0 to 100.
 *   **Intelligent Goal Forecasts:** Mapped active progress rings showing remaining target amounts and months required to hit goals.
 *   **AI Budget Analyzer:** Allocation card that audits your monthly expenditures against the standard 50/30/20 budget framework.
@@ -24,6 +24,28 @@ Future Finance AI is a premium, dark-mode first personal wealth ecosystem and AI
 | **Backend** | Node.js, Express, Mongoose, JWT Authentication, PDFKit |
 | **Database** | MongoDB Atlas |
 | **AI Layer** | Gemini API, OpenAI API, n8n Agent Webhooks (with local rules-engine fallback) |
+
+---
+
+## 🤖 Advanced AI Agent Orchestration via n8n
+
+Future Finance AI uses **n8n** as an enterprise-grade AI agent orchestration layer to power the personal wealth chatbot. Rather than making standard, isolated LLM calls, the chatbot utilizes a structured n8n workflow agent:
+
+*   **Financial Profile Context:** With each user query, the backend automatically compiles a complete snapshot of the user's active financial profile from MongoDB—including monthly income, total expenses, active savings goals, and target dates—and sends it to the n8n agent.
+*   **Dynamic Analytics & Forecasting:** The n8n agent ingests this context alongside the conversation history transcript to calculate goal completion rates, highlight spending patterns, and recommend low-risk investments or mutual funds tailored to the user's profile.
+*   **High-Resilience Fallback System:** The backend features a robust three-tier intelligence routing pipeline. If the n8n server is offline or fails to respond within the timeout threshold, the system auto-routes to direct API connectors (Gemini / OpenAI), and falls back to a localized rule engine if internet connectivity is completely lost.
+
+### Local n8n Workflow Setup
+1. Launch your local n8n server from the terminal:
+   ```bash
+   npx n8n start
+   ```
+2. Navigate to your n8n interface at `http://localhost:5678`.
+3. Create a workflow featuring a **Webhook Node** that listens for `POST` requests at `/webhook/financial-advisor`.
+4. Configure the webhook to feed the payload (`latestMessage`, `financialData`, and `conversationHistory`) into an LLM chain or AI Agent node of your choice, and return a JSON object containing the advisor's final text under the key `reply`.
+
+> [!WARNING]
+> **n8n Credential Security:** Never hardcode your API keys (OpenAI, Gemini, Groq, etc.) directly inside workflow node configuration fields. Always utilize n8n's native **Credentials** manager to bind keys securely. All local n8n system files (`.n8n/`), SQLite database files, and workflow JSON exports (`*workflow*.json`) are automatically blacklisted in [.gitignore](file:///c:/Users/achal/future-finance-ai/.gitignore) to protect against accidental commits to public repositories.
 
 ---
 
