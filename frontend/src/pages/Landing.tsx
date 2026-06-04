@@ -467,10 +467,10 @@ const Landing = () => {
             </div>
             <div className="space-y-2">
               {[
-                { label: "Budget Health", val: "87/100", color: "bg-emerald-500" },
-                { label: "Savings Rate", val: "23%", color: "bg-cyan-500" },
-                { label: "Debt Ratio", val: "0.18", color: "bg-violet-500" },
-              ].map(({ label, val, color }) => (
+                { label: "Budget Health", val: "87/100" },
+                { label: "Savings Rate", val: "23%" },
+                { label: "Debt Ratio", val: "0.18" },
+              ].map(({ label, val }) => (
                 <div key={label} className="flex items-center justify-between text-[10px]">
                   <span className="text-slate-500">{label}</span>
                   <span className="text-white font-semibold">{val}</span>
