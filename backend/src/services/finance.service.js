@@ -534,28 +534,22 @@ export const fetchDashboardData = async (userId) => {
     ? `${Math.round((emergency.currentAmount / emergency.targetAmount) * 100)}% Funded`
     : "0% Funded (Create Goal)";
 
-  // 3. Dynamic Net Worth (₹5,20,000 base + goals progress savings)
+  // 3. Net Worth — only actual tracked goal savings, no fake base amount
   const totalGoalsSavings = goals.reduce((sum, g) => sum + (g.currentAmount || 0), 0);
-  const netWorthVal = `₹${(520000 + totalGoalsSavings).toLocaleString("en-IN")}`;
+  const netWorthVal = totalGoalsSavings > 0
+    ? `₹${totalGoalsSavings.toLocaleString("en-IN")}`
+    : "₹0";
 
-  // 4. Calculate Expense Breakdown Pie Chart
+  // 4. Calculate Expense Breakdown Pie Chart — empty array for new users (no fake data)
   const categories = {};
   expenses.forEach(e => {
     const cat = e.category;
     categories[cat] = (categories[cat] || 0) + e.amount;
   });
-  let expenseBreakdown = Object.keys(categories).map(cat => ({
+  const expenseBreakdown = Object.keys(categories).map(cat => ({
     name: cat,
     value: categories[cat]
   }));
-  if (expenseBreakdown.length === 0) {
-    expenseBreakdown = [
-      { name: "Rent", value: 12000 },
-      { name: "Food", value: 5000 },
-      { name: "Fuel", value: 2000 },
-      { name: "Others", value: 1000 },
-    ];
-  }
 
   // 5. Calculate comparative Monthly Expenses vs Savings Trend (Last 6 Months)
   const trendMap = {};
@@ -573,18 +567,18 @@ export const fetchDashboardData = async (userId) => {
     }
   });
 
-  // Calculate savings dynamically relative to a mock income of ₹60,000
+  // Calculate savings dynamically against user's actual income
   const incomeRate = budgetSnapshot.income;
   const expenseTrend = Object.keys(trendMap).map(m => {
     const monthlySpend = trendMap[m].expenses;
-    // If no expenses registered, provide default trend values
-    const finalSpend = monthlySpend || (m === months[now.getMonth()] ? currentMonthExpenses : Math.floor(Math.random() * 8000) + 12000);
-    const finalSavings = Math.max(2000, incomeRate - finalSpend);
+    // Only show real data — no random fake values for months with no expenses
+    const finalSpend = monthlySpend;
+    const finalSavings = finalSpend > 0 ? Math.max(0, incomeRate - finalSpend) : 0;
     return {
       month: m,
       expenses: finalSpend,
       savings: finalSavings,
-      income: incomeRate
+      income: finalSpend > 0 ? incomeRate : 0
     };
   });
 
@@ -632,46 +626,54 @@ export const fetchDashboardData = async (userId) => {
     }
   });
 
-  if (spendingAlerts.length === 0 && currentMonthExpenses > 15000) {
-    spendingAlerts.push({
-      category: "Food",
-      message: "⚠️ Dining out/Food spending has increased by 28% compared to last month (Alert Generated)."
-    });
-  }
-
-  // 8. AI Insights Bullet Points
+  // 8. AI Insights Bullet Points — only derived from real data
   const rentExpenses = expenses.filter(e => e.category.toLowerCase() === "rent").reduce((sum, e) => sum + e.amount, 0);
-  const aiInsights = [
-    `Rent consumes ${rentExpenses > 0 ? Math.round((rentExpenses / incomeRate) * 100) : 20}% of your monthly net income target.`,
-    emergency ? `Emergency Fund is ${Math.round((emergency.currentAmount / emergency.targetAmount) * 100)}% complete.` : "No Emergency Fund established. Create one to protect your liquid cash.",
-    currentMonthExpenses > 35000 ? "Warning: Spending rate is elevated this month. Consolidate discretionary outlays." : "Excellent: Monthly spending rate is well under target. Consider investing the surplus."
+  const aiInsights = expenses.length > 0 ? [
+    rentExpenses > 0
+      ? `Rent consumes ${Math.round((rentExpenses / incomeRate) * 100)}% of your monthly net income target.`
+      : "No rent expenses logged. If you pay rent, log it to track your housing cost ratio.",
+    emergency
+      ? `Emergency Fund is ${Math.round((emergency.currentAmount / emergency.targetAmount) * 100)}% complete.`
+      : "No Emergency Fund established. Create one to protect your liquid cash.",
+    currentMonthExpenses > 35000
+      ? "Warning: Spending rate is elevated this month. Consolidate discretionary outlays."
+      : "Monthly spending rate is well under target. Consider investing the surplus."
+  ] : [
+    "Log your first expense to start tracking your financial health.",
+    "Set a budget in the Budget Planner to see your 50/30/20 breakdown.",
+    "Create a savings goal to begin tracking your wealth-building progress."
   ];
 
   return {
     stats: {
-      netWorth: { value: netWorthVal, status: "+8% this month" },
+      netWorth: { value: netWorthVal, status: totalGoalsSavings > 0 ? "+8% this month" : "No data yet" },
       emergencyFund: { value: emergencyVal, status: emergencyStatus },
-      monthlyExpenses: { value: `₹${currentMonthExpenses.toLocaleString("en-IN")}`, status: currentMonthExpenses > 35000 ? "Over Budget" : "Under Budget" },
-      investmentGrowth: { value: "+14.8%", status: "Outperforming Market" },
+      monthlyExpenses: { value: currentMonthExpenses > 0 ? `₹${currentMonthExpenses.toLocaleString("en-IN")}` : "₹0", status: currentMonthExpenses > 0 ? (currentMonthExpenses > 35000 ? "Over Budget" : "Under Budget") : "No expenses logged" },
+      investmentGrowth: { value: goals.length > 0 ? "+14.8%" : "+0%", status: goals.length > 0 ? "Outperforming Market" : "Add your data" },
     },
     secondary: {
       financialHealth: {
-        score: financialHealth.score,
-        grade: financialHealth.grade,
-        rating: financialHealth.rating
+        score: expenses.length > 0 || goals.length > 0 ? financialHealth.score : 0,
+        grade: expenses.length > 0 || goals.length > 0 ? financialHealth.grade : "—",
+        rating: expenses.length > 0 || goals.length > 0 ? financialHealth.rating : "No data",
+        metrics: financialHealth.metrics
       },
-      goalsActive: { count: goals.length, status: "On Track" },
-      riskProfile: { level: "Low-Moderate", rating: "Healthy" },
+      goalsActive: { count: goals.length, status: goals.length > 0 ? "On Track" : "None yet" },
+      riskProfile: { level: goals.length > 0 ? "Low-Moderate" : "—", rating: goals.length > 0 ? "Healthy" : "—" },
     },
-    chartData: expenseTrend, // Re-use comparative trend
+    chartData: expenseTrend,
     expenseBreakdown,
     expenseTrend,
     goalProgress,
     spendingAlerts,
     aiInsights,
     aiRecommendation: {
-      suggestion: `Based on your monthly expenses of ₹${currentMonthExpenses.toLocaleString("en-IN")}, your Emergency Fund covers ${emergency ? (emergency.currentAmount / Math.max(1, currentMonthExpenses)).toFixed(1) : 0} months. Increasing it would hit the ideal 6-month safety net threshold.`,
-      footer: "Insight dynamically formulated based on your current liquid cash and savings rate."
+      suggestion: expenses.length > 0 || goals.length > 0
+        ? `Based on your monthly expenses of ₹${currentMonthExpenses.toLocaleString("en-IN")}, your Emergency Fund covers ${emergency ? (emergency.currentAmount / Math.max(1, currentMonthExpenses)).toFixed(1) : 0} months. Increasing it would hit the ideal 6-month safety net threshold.`
+        : "Add your income in Budget Planner and log your first expense to unlock AI-powered financial insights.",
+      footer: expenses.length > 0 || goals.length > 0
+        ? "Insight dynamically formulated based on your current liquid cash and savings rate."
+        : "Personalized insights appear once you have at least one expense recorded."
     }
   };
 };
