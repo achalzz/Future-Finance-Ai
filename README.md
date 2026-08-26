@@ -1,11 +1,11 @@
-# 🌌 Future Finance AI
+#  Future Finance AI
 
 > **A Premium, Dark-Mode First Personal Wealth Ecosystem and n8n-Orchestrated Financial Agent.**
 > Inspired by the clean, minimalist design systems of Apple, Stripe, and Linear.
 
 ---
 
-## 🚀 Key Highlights
+##  Key Highlights
 
 *   **Interactive 3D Hologram Core:** Powered by Three.js and React Three Fiber, featuring a slow-orbiting particles field and floating glass torus that reacts dynamically to mouse coordinates.
 *   **n8n-Orchestrated Financial Advisor:** A glassmorphic chat interface connected to an advanced n8n workflow agent. Injects live MongoDB metrics (income, expenses, active goals) into LLMs (Groq, Gemini, OpenAI) to generate precise timelines and mutual fund recommendations.
@@ -16,7 +16,7 @@
 
 ---
 
-## 📐 System Architecture
+##  System Architecture
 
 This diagram illustrates how the system coordinates client-side visualization, backend routing, database storage, and the n8n agent orchestration pipeline:
 
@@ -50,7 +50,7 @@ graph TD
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 | Architecture Layer | Technologies Utilized |
 | :--- | :--- |
@@ -65,7 +65,7 @@ graph TD
 
 ---
 
-## 🤖 Advanced AI Agent Orchestration via n8n
+##  Advanced AI Agent Orchestration via n8n
 
 Future Finance AI leverages **n8n** as an enterprise-grade AI agent orchestration layer. Rather than executing simple, isolated LLM text prompts, the chatbot workflow dynamically utilizes real-time financial context:
 
@@ -87,7 +87,7 @@ Future Finance AI leverages **n8n** as an enterprise-grade AI agent orchestratio
 
 ---
 
-## 📦 Project Structure
+##  Project Structure
 
 ```text
 future-finance-ai/
@@ -136,7 +136,7 @@ VITE_API_URL=https://your-deployed-backend-api.com/api
 
 ---
 
-## 💻 Local Installation & Run
+##  Local Installation & Run
 
 ### Prerequisites
 *   Node.js (v18 or higher)
@@ -168,7 +168,7 @@ VITE_API_URL=https://your-deployed-backend-api.com/api
 
 ---
 
-## 📡 API Reference
+##  API Reference
 
 Authentication is managed via JSON Web Tokens. Pass `Bearer <JWT_TOKEN>` in the `Authorization` header for all protected endpoints.
 
@@ -198,7 +198,7 @@ Authentication is managed via JSON Web Tokens. Pass `Bearer <JWT_TOKEN>` in the 
 
 ---
 
-## 🔧 System Diagnostics
+##  System Diagnostics
 
 ### Stale Client Sessions
 If you restart your database server or purge Mongo collections, existing cached client JWT tokens may fail authentication checks, showing blank dashboards or error notifications.
@@ -206,6 +206,6 @@ If you restart your database server or purge Mongo collections, existing cached 
 
 ---
 
-## 📄 License
+##  License
 
 Distributed under the GNU General Public License v3 (GPL v3). See [LICENSE](LICENSE) for more information.
